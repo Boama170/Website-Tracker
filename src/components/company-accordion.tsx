@@ -1,10 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
+import Image, { type StaticImageData } from "next/image"
 import { ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { StaticImageData } from "next/image"
 
 export interface CompanyLogo {
   id: string
@@ -27,74 +26,95 @@ interface CompanyAccordionProps {
 }
 
 export function CompanyAccordion({ sections, className, openSectionIds = [], search = "" }: CompanyAccordionProps) {
-  const [openSections, setOpenSections] = useState<Set<string>>(new Set())
+  const [openSection, setOpenSection] = useState<string | null>(null)
 
   // Auto-open sections when search changes
   useEffect(() => {
-    if (search) {
-      setOpenSections(new Set(openSectionIds))
+    if (search && openSectionIds.length > 0) {
+      setOpenSection(openSectionIds[0]) // open the first matched section
     } else {
-      setOpenSections(new Set())
+      setOpenSection(null)
     }
   }, [search, openSectionIds])
 
   const toggleSection = (sectionId: string) => {
-    const newOpenSections = new Set(openSections)
-    if (newOpenSections.has(sectionId)) {
-      newOpenSections.delete(sectionId)
-    } else {
-      newOpenSections.add(sectionId)
-    }
-    setOpenSections(newOpenSections)
+    setOpenSection((prev) => (prev === sectionId ? null : sectionId))
   }
 
   return (
     <div className={cn("w-full max-w-2xl mx-auto space-y-8", className)}>
       {sections.map((section) => {
-        const isOpen = openSections.has(section.id)
+        const isOpen = openSection === section.id
 
         return (
           <div key={section.id} className="place-self-center">
             {/* Accordion Header */}
             <button
               onClick={() => toggleSection(section.id)}
-              className={
-                "min-w-[95vw] px-6 py-7 mb-6 rounded-3xl flex items-center bg-[#f5f5f5] shadow-md shadow-[0px_4px_4px 0px_#00000040] z-50 justify-between transition-all duration-200 opacity-90"
-               }
+              className="min-w-[95vw] px-6 py-7 mb-6 rounded-3xl flex items-center bg-[#f5f5f5] shadow-[0px_4px_4px_0px_#00000040] z-50 justify-between transition-all duration-200 opacity-90"
             >
-              <span className="text-3xl m-2 ps-6 font-normal text-left">{section.title}</span>
-              <ChevronDown className={cn("w-9 h-9 me-6 stroke-[4] transition-transform duration-200", isOpen && "rotate-180")} />
+              <span className="text-3xl m-2 ps-6 font-normal text-center">{section.title}</span>
+              <ChevronDown
+                className={cn(
+                  "w-9 h-9 me-6 stroke-[4] transition-transform duration-200",
+                  isOpen && "rotate-180"
+                )}
+              />
             </button>
 
-           {/* Accordion Content */}
-          {isOpen && (
-            <div className="bg-white shadow-md w-[95vw] place-self-center rounded-xl p-8 mt-1">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 w-full">
-                {section.companies.map((company) => (
-                  <div key={company.id} className="relative">
-                    {/* Main white card */}
-                    <div className="bg-white relative z-50 rounded-2xl shadow-md p-2 pt-2 transition-all duration-200 hover:scale-105">
-                      {/* Logo */}
-                      <div className="relative w-full h-20 sm:h-24">
-                        <Image
-                          src={company.logoUrl || "/placeholder.svg"}
-                          alt={company.name}
-                          fill
-                          className="object-contain"
-                        />
+            {/* Accordion Content */}
+            {isOpen && (
+              <div className="bg-white shadow-md w-[95vw] place-self-center rounded-xl p-8 mt-1">
+                <div
+                  className={cn(
+                    // Default grid
+                    "grid gap-6 w-full",
+                    // Hospitality: 3 cols
+                    section.title === "Hospitality" && "grid-cols-3 gap-12",
+                    // Info Tech: center items
+                    section.title === "Information Technology" && "grid grid-cols-1 w-[20rem] place-self-center",
+                    // Default case
+                    section.title !== "Hospitality" &&
+                      section.title !== "Information Technology" &&
+                      "grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
+                  )}
+                >
+                  {section.companies.map((company) => (
+                    <div key={company.id} className="relative">
+                      {/* Main white card */}
+                      <div
+                        className={cn(
+                          "bg-white relative z-50 rounded-2xl shadow-md transition-all duration-200 hover:scale-105",
+                          section.title === "Hospitality" ? "p-4" : "p-2 pt-2"
+                        )}
+                      >
+                        {/* Logo */}
+                        <div
+                          className={cn(
+                            "relative w-full",
+                            section.title === "Hospitality" ? "h-28 sm:h-32" : "h-20 sm:h-24"
+                          )}
+                        >
+                          <Image
+                            src={company.logoUrl || "/placeholder.svg"}
+                            alt={company.name}
+                            fill
+                            className="object-contain"
+                          />
+                        </div>
                       </div>
+                      <div
+                        className={cn(
+                          "pointer-events-none absolute -top-4 -inset-x-0 h-15 rounded-2xl shadow-sm",
+                          company.status === "success" ? "bg-[#5CBA51]" : "bg-[#E63F40]",
+                          section.title === "Hospitality" ? "w-[26rem]" : "w-[19.95rem]"
+                        )}
+                      />
                     </div>
-                    <div
-                      className={cn(
-                        "pointer-events-none absolute -top-4 -inset-x-0 h-15 rounded-2xl w-[19.9rem] shadow-sm",
-                        company.status === "success" ? "bg-[#5CBA51]" : "bg-[#E63F40]"
-                      )}
-                    />
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
           </div>
         )
       })}

@@ -19,11 +19,11 @@ function SearchSection({ search, setSearch }: SearchSectionProps) {
   return (
     <div className="my-16 bg-gray-200 py-8 w-full h-42 flex items-center ">
       <ul className="indicators list-disc container max-w-min flex flex-col gap-8 ms-6">
-        <li className="online flex list gap-12">
+        <li className="online flex list gap-6">
           <div className="size-4 mt-1 rounded-full bg-[#5CBA51]" />
           <p className='text-base font-light'>Online</p>
         </li>
-        <li className="offline flex gap-12">
+        <li className="offline flex gap-6">
           <div className="size-4 mt-1 rounded-full bg-[#E63F40]" />
           <p className='text-base font-light'>Offline</p>
         </li>
