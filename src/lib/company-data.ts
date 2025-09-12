@@ -1,4 +1,4 @@
-import type { CompanySection } from "@/components/company-accordion"
+import type { CompanySection } from "@/components/company-display"
 import quarry from "@/assets/logos/furtuno-quarry.png"
 import fortuno from "@/assets/logos/futuro-industrial-city.png"
 import lab from "@/assets/logos/lab-manufacturing-group.png"

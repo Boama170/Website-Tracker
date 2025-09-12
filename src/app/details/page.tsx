@@ -1,4 +1,5 @@
 "use client"
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -7,13 +8,6 @@ import { SearchIcon, Trash2, Filter } from "lucide-react"
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline"
 import { CompanyData } from "@/lib/company-data"
 import Link from 'next/link'
-
-const FILTER_OPTIONS = [
-  { label: "Subsidiary", value: "name" },
-  { label: "Website", value: "website" },
-  { label: "Status", value: "status" },
-  { label: "Category", value: "category" },
-]
 
 function Details() {
   const allCompanies = CompanyData.flatMap((section) =>
@@ -24,7 +18,7 @@ function Details() {
   )
 
   const [search, setSearch] = useState("")
-  const [filterBy, setFilterBy] = useState("name")
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all")
   const [showFilter, setShowFilter] = useState(false)
 
   // Helper to get website string
@@ -42,18 +36,26 @@ function Details() {
   // Filtering logic
   const filteredCompanies = allCompanies.filter((company) => {
     const searchLower = search.toLowerCase()
-    if (!search) return true
-    if (filterBy === "name") return company.name.toLowerCase().includes(searchLower)
-    if (filterBy === "website") return getWebsite(company).toLowerCase().includes(searchLower)
-    if (filterBy === "status") return (company.status === "success" ? "active" : "inactive").includes(searchLower)
-    if (filterBy === "category") return company.category.toLowerCase().includes(searchLower)
-    return true
+    const matchesSearch =
+      company.name.toLowerCase().includes(searchLower) ||
+      getWebsite(company).toLowerCase().includes(searchLower) ||
+      (company.status === "success" ? "active" : "inactive").includes(searchLower) ||
+      company.category.toLowerCase().includes(searchLower)
+
+    const matchesStatus =
+      statusFilter === "all"
+        ? true
+        : statusFilter === "active"
+        ? company.status === "success"
+        : company.status !== "success"
+
+    return matchesSearch && matchesStatus
   })
 
   // For summary cards
   const totalCompanies = filteredCompanies.length
   const activeCompanies = filteredCompanies.filter((company) => company.status === "success").length
-  const inactiveCompanies = totalCompanies - activeCompanies
+  const inactiveCompanies = filteredCompanies.filter((company) => company.status !== "success").length
 
   return (
     <div className="mt-12">
@@ -72,7 +74,7 @@ function Details() {
             <SearchIcon className="h-4 w-4 mr-2.5 text-gray-400 group-focus-within:text-black" />
             <input
               type="search"
-              placeholder={`Search ${FILTER_OPTIONS.find(opt => opt.value === filterBy)?.label || ""}`}
+              placeholder="Search"
               className="border-0 focus:outline-none w-full"
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -89,19 +91,25 @@ function Details() {
               <span>Filter</span>
             </Button>
             {showFilter && (
-              <div className="absolute right-0 mt-2 bg-white border rounded shadow z-10">
-                {FILTER_OPTIONS.map(option => (
-                  <button
-                    key={option.value}
-                    className={`block px-4 py-2 w-full text-left hover:bg-gray-100 ${filterBy === option.value ? "bg-gray-200" : ""}`}
-                    onClick={() => {
-                      setFilterBy(option.value)
-                      setShowFilter(false)
-                    }}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+              <div className="absolute right-0 mt-2 bg-white border rounded shadow z-10 min-w-[120px]">
+                <button
+                  className={`block px-4 py-2 w-full text-left hover:bg-gray-100 ${statusFilter === "all" ? "bg-gray-200" : ""}`}
+                  onClick={() => { setStatusFilter("all"); setShowFilter(false); }}
+                >
+                  All
+                </button>
+                <button
+                  className={`block px-4 py-2 w-full text-left hover:bg-gray-100 ${statusFilter === "active" ? "bg-gray-200" : ""}`}
+                  onClick={() => { setStatusFilter("active"); setShowFilter(false); }}
+                >
+                  Active
+                </button>
+                <button
+                  className={`block px-4 py-2 w-full text-left hover:bg-gray-100 ${statusFilter === "inactive" ? "bg-gray-200" : ""}`}
+                  onClick={() => { setStatusFilter("inactive"); setShowFilter(false); }}
+                >
+                  Inactive
+                </button>
               </div>
             )}
           </div>
@@ -160,17 +168,17 @@ function Details() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
-                    <div className="flex gap-2 justify-center">
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <svg className="h-8 w-8" viewBox="0 0 43 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <div className="flex gap-12 justify-center">
+                     
+                        <svg className="size-7" viewBox="0 0 43 45" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M10.0436 31.6091L18.6509 24.7392L12.9127 20.1592H32.9963V36.1891L27.2581 31.6091L18.6509 38.4791L10.0436 31.6091Z" fill="black"/>
                           <path d="M25.8235 1.83887L41.6035 14.4338V40.7686C41.6035 42.0281 40.3125 43.0586 38.7345 43.0586H4.30537C2.72737 43.0586 1.43628 42.0281 1.43628 40.7686V4.12885C1.43628 2.86936 2.72737 1.83887 4.30537 1.83887H25.8235Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                           <path d="M28.6927 2.98438V13.2893H41.6037L28.6927 2.98438Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
-                      </Button>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-black hover:text-red-700">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                     
+                      
+                       <Trash2 className="size-7" />
+                  
                     </div>
                   </TableCell>
                 </TableRow>

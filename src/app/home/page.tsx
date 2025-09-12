@@ -1,5 +1,5 @@
 "use client"
-import { CompanyAccordion } from "@/components/company-accordion"
+import { CompanyDisplay } from "@/components/company-display"
 import { CompanyData } from "@/lib/company-data"
 import SearchSection from '@/components/search-section'
 import React, { useState } from 'react'
@@ -39,8 +39,8 @@ function Home() {
     <div className="mt-12">
       <h1 className='text-3xl font-normal m-8'>Website Tracker</h1>
       <SearchSection search={search} setSearch={setSearch} />
-      <div className="container mx-auto my-12">
-        <CompanyAccordion sections={filteredSections} openSectionIds={openSectionIds} search={search} />
+      <div className="container my-12">
+        <CompanyDisplay sections={filteredSections} search={search} />
       </div>
     </div>
   )
