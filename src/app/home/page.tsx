@@ -37,7 +37,7 @@ function Home() {
 
   return (
     <div className="mt-12">
-      <h1 className='text-3xl font-normal m-8'>Website Tracker</h1>
+      <h1 className='md:text-3xl text-lg font-normal m-8'>Website Tracker</h1>
       <SearchSection search={search} setSearch={setSearch} />
       <div className="container my-12">
         <CompanyDisplay sections={filteredSections} search={search} />

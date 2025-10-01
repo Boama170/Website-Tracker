@@ -23,34 +23,38 @@ interface CompanyDisplayProps {
 }
 
 export function CompanyDisplay({ sections, className, search = "" }: CompanyDisplayProps) {
-
-  const allCompanies = sections.flatMap(section => section.companies);
+  const allCompanies = sections.flatMap((section) => section.companies)
 
   return (
-    <div className={cn("w-full max-w-7xl ms-7 xl:ms-9 justify-center", className)}>
-      <div className="bg-white w-[95vw] shadow-md  rounded-xl p-8 mt-1">
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 xl:grid-cols-7 gap-6 w-full">
+    <div className={cn("w-full md:min-w-[99vw] px-4 md:px-8 max-w-7xl mx-auto", className)}>
+      <div className="bg-white w-full shadow-md rounded-xl p-4 md:p-8 mt-1">
+        <div
+          className="grid gap-4 md:gap-7 w-full"
+          style={{
+            gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
+            gridAutoRows: "min-content",
+          }}
+        >
           {allCompanies.map((company) => (
-            <div key={company.id} className="relative">
+            <div key={company.id} className="relative flex-grow">
               {/* Main white card */}
-              <div className="bg-white relative z-50 rounded-2xl transition-all duration-200 hover:scale-102 p-2 pt-2">
+              <div
+                className={cn(
+                  "bg-white shadow-md relative z-50 rounded-2xl border-t-5 transition-all duration-200 hover:scale-105 p-5 pt-2 flex-grow",
+                  className,
+                  company.status === "success" ? "border-t-[#5CBA51]" : "border-t-[#E63F40]",
+                )}
+              >
                 {/* Logo */}
-                <div className="relative w-full h-20 sm:h-24">
+                <div className="relative w-full h-20">
                   <Image
                     src={company.logoUrl || "/placeholder.svg"}
                     alt={company.name}
                     fill
-                    className="object-contain"
+                    className="object-contain scale-145" 
                   />
                 </div>
               </div>
-              {/* Status indicator */}
-              <div
-                className={cn(
-                  "pointer-events-none absolute -top-1 -inset-x-0 h-12 rounded-xl",
-                  company.status === "success" ? "bg-[#5CBA51]" : "bg-[#E63F40]"
-                )}
-              />
             </div>
           ))}
         </div>
