@@ -22,7 +22,7 @@ function Details() {
   const [showFilter, setShowFilter] = useState(false)
 
   // Helper to get website string
-  const getWebsite = (company: any) => {
+  const getWebsite = (company: { name: string; status: string }) => {
     if (company.name === "Sec-Print") return "www.secprintgh.com"
     if (company.name === "Best Western Plus") return "www.bestwestern.com"
     if (company.name === "SOHO Bar-Restaurant") return "www.sohobar.com"

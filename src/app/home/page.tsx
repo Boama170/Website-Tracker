@@ -26,14 +26,14 @@ function Home() {
     section.companies.length > 0
   )
 
-  // Find IDs of sections that should be open
-  const openSectionIds = filteredSections
-    .filter(section =>
-      search
-        ? section.title.toLowerCase().includes(searchLower) || section.companies.length > 0
-        : false
-    )
-    .map(section => section.id)
+  // Find IDs of sections that should be open (currently unused but kept for future functionality)
+  // const openSectionIds = filteredSections
+  //   .filter(section =>
+  //     search
+  //       ? section.title.toLowerCase().includes(searchLower) || section.companies.length > 0
+  //       : false
+  //   )
+  //   .map(section => section.id)
 
   return (
     <div className="mt-12">
