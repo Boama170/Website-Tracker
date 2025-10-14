@@ -22,7 +22,7 @@ interface CompanyDisplayProps {
   search?: string
 }
 
-export function CompanyDisplay({ sections, className, search = "" }: CompanyDisplayProps) {
+export function CompanyDisplay({ sections, className }: CompanyDisplayProps) {
   const allCompanies = sections.flatMap((section) => section.companies)
 
   return (
